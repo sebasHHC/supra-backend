@@ -85,4 +85,18 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
+// ✅ Obtener préstamos por ID de usuario (para historial admin)
+router.get('/usuario/:id', authMiddleware, async (req, res) => {
+  try {
+    const prestamos = await Prestamo.find({ usuario: req.params.id })
+      .populate('libro')
+      .populate('usuario', 'nombre email'); // opcional
+
+    res.json(prestamos);
+  } catch (err) {
+    console.error('❌ Error al obtener préstamos por usuario:', err);
+    res.status(500).json({ mensaje: 'Error al obtener préstamos por usuario' });
+  }
+});
+
 module.exports = router;
