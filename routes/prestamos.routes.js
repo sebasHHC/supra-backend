@@ -90,12 +90,44 @@ router.get('/usuario/:id', authMiddleware, async (req, res) => {
   try {
     const prestamos = await Prestamo.find({ usuario: req.params.id })
       .populate('libro')
-      .populate('usuario', 'nombre email'); // opcional
+      .populate('usuario', 'nombre email');
 
     res.json(prestamos);
   } catch (err) {
     console.error('❌ Error al obtener préstamos por usuario:', err);
     res.status(500).json({ mensaje: 'Error al obtener préstamos por usuario' });
+  }
+});
+
+// ✅ Solicitar préstamo como estudiante
+router.post('/solicitar', authMiddleware, async (req, res) => {
+  try {
+    const { libroId } = req.body;
+    const usuarioId = req.usuario.id;
+
+    if (!libroId) {
+      return res.status(400).json({ mensaje: 'Falta el ID del libro' });
+    }
+
+    const libro = await Libro.findById(libroId);
+    if (!libro || !libro.disponible) {
+      return res.status(404).json({ mensaje: 'Libro no disponible o no encontrado' });
+    }
+
+    const nuevoPrestamo = new Prestamo({
+      usuario: usuarioId,
+      libro: libroId,
+      fechaPrestamo: new Date(),
+      estado: 'prestado'
+    });
+
+    await nuevoPrestamo.save();
+    await Libro.findByIdAndUpdate(libroId, { disponible: false });
+
+    res.status(201).json({ mensaje: 'Solicitud registrada correctamente' });
+  } catch (err) {
+    console.error('❌ Error al solicitar libro:', err);
+    res.status(500).json({ mensaje: 'Error al solicitar libro' });
   }
 });
 
