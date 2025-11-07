@@ -17,8 +17,8 @@ mongoose.connect(process.env.MONGO_URI)
 // Rutas
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/libros', require('./routes/libros.routes'));
-app.use('/api/prestamos', require('./routes/prestamos.routes')); // ✅ ESTA ES LA CLAVE
-
+app.use('/api/prestamos', require('./routes/prestamos.routes'));
+app.use('/api', require('./routes/usuarios.routes')); // ✅ NUEVA RUTA
 // Puerto
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

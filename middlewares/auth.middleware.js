@@ -12,8 +12,10 @@ module.exports = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log('👤 Usuario autenticado:', decoded);
 
-    // ✅ Aseguramos que req.usuario tenga el campo "id"
-    req.usuario = { id: decoded.id || decoded._id };
+    req.usuario = {
+      id: decoded.id || decoded._id,
+      rol: decoded.rol
+    };
 
     next();
   } catch (err) {

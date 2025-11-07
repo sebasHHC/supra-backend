@@ -43,14 +43,14 @@ router.put('/:id/devolver', authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Crear préstamo (solo admin)
+// ✅ Crear préstamo con fecha personalizada (solo admin)
 router.post('/', authMiddleware, async (req, res) => {
   try {
     if (req.usuario.rol !== 'admin') {
       return res.status(403).json({ mensaje: 'Solo el administrador puede crear préstamos' });
     }
 
-    const { libroId, usuarioId } = req.body;
+    const { libroId, usuarioId, fechaDevolucion } = req.body;
 
     if (!libroId || !usuarioId) {
       return res.status(400).json({ mensaje: 'Faltan datos: libroId y usuarioId son requeridos' });
@@ -71,6 +71,7 @@ router.post('/', authMiddleware, async (req, res) => {
       usuario: usuarioId,
       libro: libroId,
       fechaPrestamo: new Date(),
+      fechaDevolucion: fechaDevolucion ? new Date(fechaDevolucion) : null,
       estado: 'prestado'
     });
 
